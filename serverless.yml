@@ -24,6 +24,8 @@ functions:
       - httpApi:
           path: /generate-quiz
           method: post
+          cors:
+            origin: '*'
 
 plugins:
   - serverless-plugin-typescript
