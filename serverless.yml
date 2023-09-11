@@ -6,9 +6,10 @@ frameworkVersion: '3'
 provider:
   name: aws
   runtime: nodejs18.x
+  stage: ${opt:stage,'dev'}
+  region: ap-south-1
   environment:
     OPEN_AI_SECRET_KEY: ${param:OPEN_AI_SECRET_KEY}
-
 
 functions:
   hello:
