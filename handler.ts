@@ -80,17 +80,24 @@ export const generateRecipes = async (
   const recipeRecommendation = new RecipeRecommendation(
     process.env.OPEN_AI_SECRET_KEY
   );
-  const body = JSON.parse(event.body || "{}");
-  body.ingredients = body.ingredients ?? [
-    "spam",
-    "rice",
-    "eggs",
-    "cauliflower",
-  ];
+  const ingredients =
+    event.queryStringParameters?.ingredients?.split(",") || [];
 
-  const results = await recipeRecommendation.createRecipePrompt(
-    body.ingredients
-  );
+  if (!ingredients.length) {
+    return {
+      statusCode: 200,
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Credentials": true,
+      },
+      body: JSON.stringify({
+        results: [],
+        input: event,
+      }),
+    };
+  }
+
+  const results = await recipeRecommendation.createRecipePrompt(ingredients);
 
   return {
     statusCode: 200,

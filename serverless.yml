@@ -8,7 +8,7 @@ provider:
   runtime: nodejs18.x
   stage: ${opt:stage,'dev'}
   region: ap-south-1
-  timeout: 20
+  timeout: 28
   environment:
     OPEN_AI_SECRET_KEY: ${param:OPEN_AI_SECRET_KEY}
   httpApi:
