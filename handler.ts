@@ -1,5 +1,6 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
 import Quizzer from "./functions/quizzer";
+import RecipeRecommendation from "./functions/recipe-recommendation";
 
 export const hello = async (
   event: APIGatewayProxyEvent
@@ -44,6 +45,51 @@ export const generateQuiz = async (
     body.topic,
     body.num_questions,
     body.num_answers
+  );
+
+  return {
+    statusCode: 200,
+    headers: {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Credentials": true,
+    },
+    body: JSON.stringify({
+      results,
+      input: event,
+    }),
+  };
+};
+
+export const generateRecipes = async (
+  event: APIGatewayProxyEvent
+): Promise<APIGatewayProxyResult> => {
+  if (!process.env.OPEN_AI_SECRET_KEY) {
+    return {
+      statusCode: 500,
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Credentials": true,
+      },
+      body: JSON.stringify({
+        message: "No API Key provided",
+        input: event,
+      }),
+    };
+  }
+
+  const recipeRecommendation = new RecipeRecommendation(
+    process.env.OPEN_AI_SECRET_KEY
+  );
+  const body = JSON.parse(event.body || "{}");
+  body.ingredients = body.ingredients ?? [
+    "spam",
+    "rice",
+    "eggs",
+    "cauliflower",
+  ];
+
+  const results = await recipeRecommendation.createRecipePrompt(
+    body.ingredients
   );
 
   return {

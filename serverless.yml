@@ -29,6 +29,13 @@ functions:
           path: /generate-quiz
           method: post
 
+  generateRecipes:
+    handler: handler.generateRecipes
+    events:
+      - httpApi:
+          path: /generate-recipes
+          method: get
+
 
 plugins:
   - serverless-plugin-typescript
