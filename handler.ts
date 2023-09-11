@@ -32,7 +32,7 @@ export const generateQuiz = async (
 
   const quizzer = new Quizzer(process.env.OPEN_AI_SECRET_KEY);
 
-  const results = await quizzer.createTestPrompt("science", 5, 4);
+  const results = await quizzer.createTestPrompt("Science", 5, 4);
 
   return {
     statusCode: 200,

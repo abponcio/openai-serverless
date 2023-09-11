@@ -23,7 +23,7 @@ functions:
     events:
       - httpApi:
           path: /generate-quiz
-          method: get
+          method: post
 
 plugins:
   - serverless-plugin-typescript
