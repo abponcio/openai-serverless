@@ -6,6 +6,10 @@ export const hello = async (
 ): Promise<APIGatewayProxyResult> => {
   return {
     statusCode: 200,
+    headers: {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Credentials": true,
+    },
     body: JSON.stringify(
       {
         message: "Go Serverless v3.0! Your function executed successfully!",
@@ -23,6 +27,10 @@ export const generateQuiz = async (
   if (!process.env.OPEN_AI_SECRET_KEY) {
     return {
       statusCode: 500,
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Credentials": true,
+      },
       body: JSON.stringify({
         message: "No API Key provided",
         input: event,
@@ -31,8 +39,12 @@ export const generateQuiz = async (
   }
 
   const quizzer = new Quizzer(process.env.OPEN_AI_SECRET_KEY);
-
-  const results = await quizzer.createTestPrompt("Science", 5, 4);
+  const body = JSON.parse(event.body || "{}");
+  const results = await quizzer.createTestPrompt(
+    body.topic,
+    body.num_questions,
+    body.num_answers
+  );
 
   return {
     statusCode: 200,

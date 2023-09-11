@@ -8,8 +8,11 @@ provider:
   runtime: nodejs18.x
   stage: ${opt:stage,'dev'}
   region: ap-south-1
+  timeout: 20
   environment:
     OPEN_AI_SECRET_KEY: ${param:OPEN_AI_SECRET_KEY}
+  httpApi:
+    cors: true
 
 functions:
   hello:
@@ -18,14 +21,14 @@ functions:
       - httpApi:
           path: /
           method: get
+
   quiz:
     handler: handler.generateQuiz
     events:
       - httpApi:
           path: /generate-quiz
           method: post
-          cors:
-            origin: '*'
+
 
 plugins:
   - serverless-plugin-typescript
