@@ -12,7 +12,7 @@ export default class RecipeRecommendation {
   }
 
   async createRecipePrompt(ingredients: string[]) {
-    let prompt = `Create 4 new recipes using just only with ${ingredients.join(
+    let prompt = `Create 2 new recipes using just only with ${ingredients.join(
       ", "
     )} and common pantry ingredients.
 Include the ingredients and instructions for each recipe.
@@ -22,6 +22,7 @@ Prepend Title: to the recipe title.`;
     const response = await this.openai.chat.completions.create({
       model: this.model,
       messages: [{ role: "user", content: prompt }],
+      max_tokens: 2048,
     });
 
     if (!response.choices[0].message.content) {
