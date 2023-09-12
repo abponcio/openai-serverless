@@ -80,8 +80,11 @@ export const generateRecipes = async (
   const recipeRecommendation = new RecipeRecommendation(
     process.env.OPEN_AI_SECRET_KEY
   );
-  const ingredients =
-    event.queryStringParameters?.ingredients?.split(",") || [];
+  const ingredients = event.queryStringParameters?.ingredients?.split(",") || [
+    "chicken",
+    "rice",
+    "broccoli",
+  ];
 
   if (!ingredients.length) {
     return {

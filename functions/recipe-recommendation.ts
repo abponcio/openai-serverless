@@ -1,4 +1,9 @@
 import OpenAI from "openai";
+import * as uuid from "uuid";
+
+import { DynamoDB } from "aws-sdk";
+
+const dynamoDb = new DynamoDB.DocumentClient();
 
 export default class RecipeRecommendation {
   private openai: OpenAI;
@@ -32,7 +37,43 @@ Prepend Title: to the recipe title.`;
 
     const recipes = this.getRecipes(content);
 
+    if (process.env.DYNAMODB_TABLE) {
+      await this.saveRecipes(recipes);
+    }
+
     return recipes;
+  }
+
+  async saveRecipes(recipes) {
+    const timestamp = new Date().getTime();
+    if (!recipes.length || !process.env.DYNAMODB_TABLE) {
+      console.warn("Nothing to save");
+      return;
+    }
+
+    for (const recipe of recipes) {
+      const timestamp = new Date().getTime();
+      const params = {
+        TableName: process.env.DYNAMODB_TABLE,
+        Item: {
+          id: uuid.v1(),
+          title: recipe.title,
+          ingredients: recipe.ingredients,
+          steps: recipe.steps,
+          createdAt: timestamp,
+          updatedAt: timestamp,
+        },
+      };
+
+      // write the todo to the database
+      dynamoDb.put(params, (error, result) => {
+        // handle potential errors
+        if (error) {
+          console.error(error);
+          return;
+        }
+      });
+    }
   }
 
   async createImagePrompt(title: string) {
