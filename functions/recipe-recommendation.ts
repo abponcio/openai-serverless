@@ -22,7 +22,6 @@ Prepend Title: to the recipe title.`;
     const response = await this.openai.chat.completions.create({
       model: this.model,
       messages: [{ role: "user", content: prompt }],
-      max_tokens: 2048,
     });
 
     if (!response.choices[0].message.content) {
