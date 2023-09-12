@@ -132,6 +132,7 @@ export const generateRecipeImage = async (
   const recipeRecommendation = new RecipeRecommendation(
     process.env.OPEN_AI_SECRET_KEY
   );
+
   const recipeTitle = event.queryStringParameters?.title || "";
 
   if (!recipeTitle) {
@@ -142,7 +143,7 @@ export const generateRecipeImage = async (
         "Access-Control-Allow-Credentials": true,
       },
       body: JSON.stringify({
-        results: [],
+        results: "",
         input: event,
       }),
     };
