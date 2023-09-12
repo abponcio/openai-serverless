@@ -111,3 +111,54 @@ export const generateRecipes = async (
     }),
   };
 };
+
+export const generateRecipeImage = async (
+  event: APIGatewayProxyEvent
+): Promise<APIGatewayProxyResult> => {
+  if (!process.env.OPEN_AI_SECRET_KEY) {
+    return {
+      statusCode: 500,
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Credentials": true,
+      },
+      body: JSON.stringify({
+        message: "No API Key provided",
+        input: event,
+      }),
+    };
+  }
+
+  const recipeRecommendation = new RecipeRecommendation(
+    process.env.OPEN_AI_SECRET_KEY
+  );
+  const recipeTitle = event.queryStringParameters?.title || "";
+
+  if (!recipeTitle) {
+    return {
+      statusCode: 200,
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Credentials": true,
+      },
+      body: JSON.stringify({
+        results: [],
+        input: event,
+      }),
+    };
+  }
+
+  const results = await recipeRecommendation.createImagePrompt(recipeTitle);
+
+  return {
+    statusCode: 200,
+    headers: {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Credentials": true,
+    },
+    body: JSON.stringify({
+      results,
+      input: event,
+    }),
+  };
+};

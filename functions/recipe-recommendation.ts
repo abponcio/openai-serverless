@@ -36,6 +36,16 @@ Prepend Title: to the recipe title.`;
     return recipes;
   }
 
+  async createImagePrompt(title: string) {
+    const imagePrompt = `Create professional studio style top view image of the recipe ${title} in a plate`;
+    const response = await this.openai.images.generate({
+      prompt: title,
+      size: "512x512",
+    });
+
+    return response.data[0].url;
+  }
+
   getRecipes(content: string) {
     let recipes: any = [];
     let index = 0;

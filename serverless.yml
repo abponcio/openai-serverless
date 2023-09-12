@@ -37,6 +37,14 @@ functions:
           path: /generate-recipes
           method: get
 
+  generateRecipeImage:
+    handler: handler.generateRecipeImage
+    timeout: 30
+    events:
+      - httpApi:
+          path: /generate-recipe-image
+          method: get
+
 
 plugins:
   - serverless-plugin-typescript
