@@ -12,7 +12,7 @@ export default class RecipeRecommendation {
   }
 
   async createRecipePrompt(ingredients: string[]) {
-    let prompt = `Create three new recipes using just only ${ingredients.join(
+    let prompt = `Create 2 new recipes using just only ${ingredients.join(
       ", "
     )} and common pantry ingredients at home.
 Include the ingredients and instructions for each recipe.
