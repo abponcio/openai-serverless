@@ -1,9 +1,9 @@
 import OpenAI from "openai";
-// import * as uuid from "uuid";
+import * as uuid from "uuid";
 
-// import { DynamoDB } from "aws-sdk";
+import { DynamoDB } from "aws-sdk";
 
-// const dynamoDb = new DynamoDB.DocumentClient();
+const dynamoDb = new DynamoDB.DocumentClient();
 
 export default class RecipeRecommendation {
   private openai: OpenAI;
@@ -17,10 +17,9 @@ export default class RecipeRecommendation {
   }
 
   async createRecipePrompt(ingredients: string[]) {
-    let prompt = `Create 2 new recipes using just only ${ingredients.join(
+    let prompt = `Create a new recipe using just only ${ingredients.join(
       ", "
-    )} and common pantry ingredients at home.
-Include the ingredients and instructions for each recipe.
+    )} and common pantry ingredients for cooking at home.
 format each ingredients with '__' in the beginning and format each instructions with '--' in the beginning.
 Prepend Title: to the recipe title.`;
 
@@ -38,44 +37,44 @@ Prepend Title: to the recipe title.`;
     const recipes = this.getRecipes(content);
 
     // TODO: save generated recipes in dynamodb
-    // if (process.env.DYNAMODB_TABLE) {
-    //   await this.saveRecipes(recipes);
-    // }
+    if (process.env.DYNAMODB_TABLE) {
+      await this.saveRecipes(recipes);
+    }
 
     return recipes;
   }
 
-  // async saveRecipes(recipes) {
-  //   const timestamp = new Date().getTime();
-  //   if (!recipes.length || !process.env.DYNAMODB_TABLE) {
-  //     console.warn("Nothing to save");
-  //     return;
-  //   }
+  async saveRecipes(recipes) {
+    const timestamp = new Date().getTime();
+    if (!recipes.length || !process.env.DYNAMODB_TABLE) {
+      console.warn("Nothing to save");
+      return;
+    }
 
-  //   for (const recipe of recipes) {
-  //     const timestamp = new Date().getTime();
-  //     const params = {
-  //       TableName: process.env.DYNAMODB_TABLE,
-  //       Item: {
-  //         id: uuid.v1(),
-  //         title: recipe.title,
-  //         ingredients: recipe.ingredients,
-  //         steps: recipe.steps,
-  //         createdAt: timestamp,
-  //         updatedAt: timestamp,
-  //       },
-  //     };
+    for (const recipe of recipes) {
+      const timestamp = new Date().getTime();
+      const params = {
+        TableName: process.env.DYNAMODB_TABLE,
+        Item: {
+          id: uuid.v1(),
+          title: recipe.title,
+          ingredients: recipe.ingredients,
+          steps: recipe.steps,
+          createdAt: timestamp,
+          updatedAt: timestamp,
+        },
+      };
 
-  //     // write the todo to the database
-  //     dynamoDb.put(params, (error, result) => {
-  //       // handle potential errors
-  //       if (error) {
-  //         console.error(error);
-  //         return;
-  //       }
-  //     });
-  //   }
-  // }
+      // write the todo to the database
+      dynamoDb.put(params, (error, result) => {
+        // handle potential errors
+        if (error) {
+          console.error(error);
+          return;
+        }
+      });
+    }
+  }
 
   async createImagePrompt(title: string) {
     const imagePrompt = `Create professional studio style top view image of the recipe ${title} in a plate`;
