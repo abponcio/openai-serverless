@@ -19,9 +19,17 @@ export default class RecipeRecommendation {
   async createRecipePrompt(ingredients: string[]) {
     let prompt = `Create a new recipe using just only ${ingredients.join(
       ", "
-    )} and common pantry ingredients for cooking at home.
-format each ingredients with '__' in the beginning and format each instructions with '--' in the beginning.
-Prepend Title: to the recipe title.`;
+    )} and common pantry ingredients at home.
+I want to content to format like this:
+
+Title: [Recipe name]
+__[Enter ingredient 1]
+__[Enter ingredient 2]
+__[Enter ingredient 3]
+
+-- [Enter step 1 description]
+-- [Enter step 2 description]
+-- [Enter step 3 description]`;
 
     const response = await this.openai.chat.completions.create({
       model: this.model,
@@ -37,9 +45,7 @@ Prepend Title: to the recipe title.`;
     const recipes = this.getRecipes(content);
 
     // TODO: save generated recipes in dynamodb
-    if (process.env.DYNAMODB_TABLE) {
-      await this.saveRecipes(recipes);
-    }
+    await this.saveRecipes(recipes);
 
     return recipes;
   }
@@ -65,13 +71,15 @@ Prepend Title: to the recipe title.`;
         },
       };
 
-      // write the todo to the database
+      // write to the database
       dynamoDb.put(params, (error, result) => {
         // handle potential errors
         if (error) {
           console.error(error);
           return;
         }
+
+        console.log(result);
       });
     }
   }
